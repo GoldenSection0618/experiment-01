@@ -6,6 +6,7 @@
         <template v-if="userStore.isLoggedIn">
           <el-menu-item index="/home">首页</el-menu-item>
           <el-menu-item index="/books">图书列表</el-menu-item>
+          <el-menu-item v-if="userStore.role === 'USER'" index="/my-borrows">我的借阅</el-menu-item>
           <el-menu-item v-if="userStore.role === 'ADMIN'" index="/admin">管理入口</el-menu-item>
           <el-menu-item index="/password">修改密码</el-menu-item>
         </template>

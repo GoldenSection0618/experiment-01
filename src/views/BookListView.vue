@@ -25,17 +25,34 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="操作" width="110">
+        <template #default="{ row }">
+          <el-button
+            v-if="userStore.role === 'USER'"
+            type="primary"
+            size="small"
+            :disabled="row.status !== 'ON_SHELF' || row.availableStock <= 0"
+            @click="handleBorrow(row)"
+          >
+            借阅
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </section>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
+import { ElMessage } from 'element-plus';
 import { listBooks } from '../api/books';
+import { borrowBook } from '../api/borrows';
+import { useUserStore } from '../stores/user';
 
 const books = ref([]);
 const loading = ref(false);
 const errorMessage = ref('');
+const userStore = useUserStore();
 
 async function loadBooks() {
   loading.value = true;
@@ -53,6 +70,20 @@ async function loadBooks() {
     books.value = [];
   } finally {
     loading.value = false;
+  }
+}
+
+async function handleBorrow(row) {
+  try {
+    const result = await borrowBook(row.id);
+    if (!result.success) {
+      ElMessage.error(result.message);
+      return;
+    }
+    ElMessage.success('借阅成功');
+    loadBooks();
+  } catch (error) {
+    ElMessage.error('借阅失败');
   }
 }
 
