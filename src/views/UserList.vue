@@ -68,34 +68,14 @@
 <script>
 import AppLayout from '../components/AppLayout.vue';
 import UserDetailDialog from '../components/UserDetailDialog.vue';
-
-const mockUsers = [
-  { id:1, name:'张三', gender:'男', age:20, email:'zhangsan@example.com', address:'湖北武汉' },
-  { id:2, name:'李四', gender:'女', age:22, email:'lisi@example.com', address:'北京朝阳' },
-  { id:3, name:'王五', gender:'男', age:25, email:'wangwu@example.com', address:'上海浦东' },
-  { id:4, name:'赵六', gender:'女', age:19, email:'zhaoliu@example.com', address:'广东广州' },
-  { id:5, name:'孙七', gender:'男', age:21, email:'sunqi@example.com', address:'浙江杭州' },
-  { id:6, name:'周八', gender:'女', age:23, email:'zhouba@example.com', address:'江苏南京' },
-  { id:7, name:'吴九', gender:'男', age:24, email:'wujiu@example.com', address:'四川成都' },
-  { id:8, name:'郑十', gender:'女', age:20, email:'zhengshi@example.com', address:'重庆渝北' },
-  { id:9, name:'冯十一', gender:'男', age:26, email:'fengshiyi@example.com', address:'陕西西安' },
-  { id:10, name:'陈十二', gender:'女', age:18, email:'chenshier@example.com', address:'湖南长沙' },
-  { id:11, name:'褚十三', gender:'男', age:27, email:'chushisan@example.com', address:'山东济南' },
-  { id:12, name:'卫十四', gender:'女', age:22, email:'weishisi@example.com', address:'福建福州' },
-  { id:13, name:'蒋十五', gender:'男', age:23, email:'jiangshiwu@example.com', address:'安徽合肥' },
-  { id:14, name:'沈十六', gender:'女', age:21, email:'shenshiliu@example.com', address:'辽宁沈阳' },
-  { id:15, name:'韩十七', gender:'男', age:28, email:'hanshiqi@example.com', address:'吉林长春' },
-  { id:16, name:'杨十八', gender:'女', age:19, email:'yangshiba@example.com', address:'黑龙江哈尔滨' },
-  { id:17, name:'朱十九', gender:'男', age:24, email:'zhushijiu@example.com', address:'河南郑州' },
-  { id:18, name:'秦二十', gender:'女', age:20, email:'qinershi@example.com', address:'河北石家庄' }
-];
+import { userList } from '../data/users';
 
 export default {
   name: 'UserListPage',
   components: { AppLayout, UserDetailDialog },
   data() {
     return {
-      allUsers: mockUsers,
+      allUsers: userList.slice(),
       search: { username: '', gender: '' },
       currentPage: 1,
       pageSize: 5,
@@ -141,7 +121,7 @@ export default {
       this.dialogVisible = true;
     },
     handleEdit(row) {
-      this.$message.info(`模拟编辑用户：${row.name}`);
+      this.$message.info(`静态页面暂未实现编辑：${row.name}`);
     },
     handleDelete(row) {
       this.$confirm(`确定删除用户"${row.name}"？`, '提示', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' })

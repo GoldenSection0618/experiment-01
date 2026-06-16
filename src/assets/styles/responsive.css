@@ -1,53 +1,65 @@
-/* ========================================
-   响应式样式 - responsive.css
-   实验一：HTML 静态网页设计
-   断点说明：
-   - 800px: 表单类页面（登录、注册、忘记密码）单双列切换
-   - 1000px: 主页菜单展示切换
-   ======================================== */
-
-/* ===== 表单页面响应式 (断点 800px) ===== */
-
 @media (max-width: 800px) {
-  .form-page {
-    flex-direction: column !important;
-    padding: 20px !important;
+  .auth-page {
+    padding: 20px;
   }
 
-  .form-page .brand-section {
-    display: none;
+  .auth-card {
+    min-height: auto;
+    grid-template-columns: 1fr;
   }
 
-  .form-page .form-section {
+  .auth-main,
+  .auth-side {
+    padding: 28px 22px;
+  }
+
+  .auth-side {
+    border-top: 1px solid #ebeef5;
+  }
+
+  .avatar-section {
     width: 100% !important;
-    max-width: 400px !important;
-    padding: 24px 20px !important;
+    padding: 0 !important;
+    background: transparent !important;
   }
 
-  .form-page .form-card {
-    width: 100% !important;
-    max-width: 100% !important;
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  /* 右侧面板小屏全宽 */
-  .form-page .avatar-section,
-  .form-page .info-section {
-    width: 100% !important;
-    margin-top: 20px;
+  .info-page .profile {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .info-page .profile-grid {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .info-page .actions {
+    flex-wrap: wrap;
+  }
+
+  .user-list-page .table-container {
+    overflow-x: auto;
+  }
+
+  .user-list-page .pagination-wrapper {
+    justify-content: center;
   }
 }
-
-/* ===== 主页布局响应式 (断点 1000px) ===== */
 
 @media (max-width: 1000px) {
   .app-layout .el-aside {
     position: fixed;
-    left: 0;
     top: 60px;
     bottom: 0;
+    left: 0;
     z-index: 1000;
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
   }
 
   .app-layout .el-aside.menu-visible {
@@ -55,14 +67,13 @@
   }
 
   .app-layout .menu-overlay {
-    display: block;
     position: fixed;
     top: 60px;
-    left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    left: 0;
     z-index: 999;
+    background: rgba(0, 0, 0, 0.45);
   }
 
   .app-layout .menu-toggle-btn {
@@ -73,44 +84,24 @@
     padding: 16px !important;
   }
 
-  /* 主页内容小屏调整 */
-  .home-content .home-grid {
-    grid-template-columns: 1fr !important;
-  }
-
   .home-content .welcome-bar {
     flex-direction: column;
-    text-align: center;
+    align-items: flex-start;
+    gap: 12px;
   }
 
-  .home-content .image-row {
+  .home-content .image-row,
+  .home-content .home-grid {
     grid-template-columns: 1fr !important;
   }
 }
 
 @media (min-width: 1001px) {
-  .app-layout .menu-toggle-btn {
-    display: none !important;
-  }
-
+  .app-layout .menu-toggle-btn,
   .app-layout .menu-overlay {
     display: none !important;
   }
 }
-
-/* ===== 用户列表页响应式 ===== */
-
-@media (max-width: 800px) {
-  .user-list-page .table-container {
-    overflow-x: auto;
-  }
-
-  .user-list-page .pagination-wrapper {
-    justify-content: center;
-  }
-}
-
-/* ===== 通用小屏调整 ===== */
 
 @media (max-width: 480px) {
   .app-layout .el-header {
@@ -118,6 +109,6 @@
   }
 
   .app-layout .header-title {
-    font-size: 16px !important;
+    font-size: 15px !important;
   }
 }

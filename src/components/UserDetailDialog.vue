@@ -7,6 +7,8 @@
       <el-descriptions-item label="年龄">{{ user.age }}</el-descriptions-item>
       <el-descriptions-item label="邮箱" :span="2">{{ user.email }}</el-descriptions-item>
       <el-descriptions-item label="地址" :span="2">{{ user.address }}</el-descriptions-item>
+      <el-descriptions-item label="出生年月">{{ user.birthday }}</el-descriptions-item>
+      <el-descriptions-item label="注册时间">{{ user.registerTime }}</el-descriptions-item>
     </el-descriptions>
     <span slot="footer">
       <el-button type="primary" @click="visible = false">关闭</el-button>

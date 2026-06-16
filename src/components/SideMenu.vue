@@ -7,17 +7,9 @@
       router
       class="side-menu-el"
     >
-      <el-menu-item index="/home">
-        <i class="el-icon-s-home"></i>
-        <span slot="title">主页</span>
-      </el-menu-item>
-      <el-menu-item index="/info">
-        <i class="el-icon-info"></i>
-        <span slot="title">信息页面</span>
-      </el-menu-item>
-      <el-menu-item index="/users">
-        <i class="el-icon-user-solid"></i>
-        <span slot="title">用户管理</span>
+      <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path">
+        <i :class="item.icon"></i>
+        <span slot="title">{{ item.title }}</span>
       </el-menu-item>
     </el-menu>
 
@@ -49,6 +41,8 @@
 </template>
 
 <script>
+import { menuItems } from '../data/menu';
+
 export default {
   name: 'SideMenu',
   inject: ['getTheme', 'setTheme'],
@@ -57,6 +51,11 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  data() {
+    return {
+      menuItems
+    };
   },
   computed: {
     activeMenu() {

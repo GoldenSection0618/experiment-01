@@ -10,7 +10,7 @@ import UserList from '../views/UserList.vue';
 Vue.use(VueRouter);
 
 const routes = [
-  { path: '/', redirect: '/home' },
+  { path: '/', redirect: '/login' },
   { path: '/login', component: Login, meta: { title: '登录' } },
   { path: '/register', component: Register, meta: { title: '注册' } },
   { path: '/forgot-password', component: ForgotPassword, meta: { title: '忘记密码' } },

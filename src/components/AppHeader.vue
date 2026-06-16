@@ -11,7 +11,7 @@
       <el-dropdown trigger="click" @command="handleCommand">
         <span class="header-user">
           <i class="el-icon-user-solid"></i>
-          <span>{{ username }}</span>
+          <span>{{ user.name }}</span>
           <i class="el-icon-arrow-down"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -25,11 +25,13 @@
 </template>
 
 <script>
+import { currentUser } from '../data/users';
+
 export default {
   name: 'AppHeader',
   data() {
     return {
-      username: '张三'
+      user: currentUser
     };
   },
   methods: {
