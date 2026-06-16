@@ -1,6 +1,7 @@
 package com.example.experiment2.mapper;
 
 import com.example.experiment2.entity.Book;
+import com.example.experiment2.entity.AdminBorrowRecord;
 import com.example.experiment2.entity.BorrowRecord;
 import com.example.experiment2.entity.BorrowRule;
 import com.example.experiment2.entity.MyBorrowRecord;
@@ -41,4 +42,20 @@ public interface BorrowRecordMapper {
                      @Param("fineAmount") java.math.BigDecimal fineAmount);
 
     int markMyOverdue(@Param("userId") Long userId, @Param("now") LocalDateTime now);
+
+    int markAllOverdue(@Param("now") LocalDateTime now);
+
+    List<AdminBorrowRecord> findAdminPage(@Param("username") String username,
+                                          @Param("title") String title,
+                                          @Param("status") String status,
+                                          @Param("startTime") String startTime,
+                                          @Param("endTime") String endTime,
+                                          @Param("offset") int offset,
+                                          @Param("pageSize") int pageSize);
+
+    long countAdmin(@Param("username") String username,
+                    @Param("title") String title,
+                    @Param("status") String status,
+                    @Param("startTime") String startTime,
+                    @Param("endTime") String endTime);
 }

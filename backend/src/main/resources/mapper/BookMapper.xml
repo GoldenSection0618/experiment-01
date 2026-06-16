@@ -19,22 +19,111 @@
         <result property="updatedTime" column="updated_time" />
     </resultMap>
 
+    <sql id="BookColumns">
+        b.id,
+        b.category_id,
+        c.name AS category_name,
+        b.title,
+        b.author,
+        b.publisher,
+        b.isbn,
+        b.total_stock,
+        b.available_stock,
+        b.status,
+        b.created_time,
+        b.updated_time
+    </sql>
+
     <select id="findAll" resultMap="BookMap">
-        SELECT
-            b.id,
-            b.category_id,
-            c.name AS category_name,
-            b.title,
-            b.author,
-            b.publisher,
-            b.isbn,
-            b.total_stock,
-            b.available_stock,
-            b.status,
-            b.created_time,
-            b.updated_time
+        SELECT <include refid="BookColumns" />
         FROM book b
         LEFT JOIN book_category c ON b.category_id = c.id
         ORDER BY b.id
     </select>
+
+    <select id="findAdminPage" resultMap="BookMap">
+        SELECT <include refid="BookColumns" />
+        FROM book b
+        LEFT JOIN book_category c ON b.category_id = c.id
+        <where>
+            <if test="title != null and title != ''">
+                AND b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="author != null and author != ''">
+                AND b.author LIKE CONCAT('%', #{author}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND b.category_id = #{categoryId}
+            </if>
+            <if test="status != null and status != ''">
+                AND b.status = #{status}
+            </if>
+        </where>
+        ORDER BY b.id DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAdmin" resultType="long">
+        SELECT COUNT(*)
+        FROM book b
+        <where>
+            <if test="title != null and title != ''">
+                AND b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="author != null and author != ''">
+                AND b.author LIKE CONCAT('%', #{author}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND b.category_id = #{categoryId}
+            </if>
+            <if test="status != null and status != ''">
+                AND b.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" resultMap="BookMap">
+        SELECT <include refid="BookColumns" />
+        FROM book b
+        LEFT JOIN book_category c ON b.category_id = c.id
+        WHERE b.id = #{id}
+    </select>
+
+    <select id="findByIsbn" resultMap="BookMap">
+        SELECT <include refid="BookColumns" />
+        FROM book b
+        LEFT JOIN book_category c ON b.category_id = c.id
+        WHERE b.isbn = #{isbn}
+    </select>
+
+    <select id="findByIsbnExcludeId" resultMap="BookMap">
+        SELECT <include refid="BookColumns" />
+        FROM book b
+        LEFT JOIN book_category c ON b.category_id = c.id
+        WHERE b.isbn = #{isbn}
+          AND b.id != #{id}
+    </select>
+
+    <insert id="insert" parameterType="Book" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO book (category_id, title, author, publisher, isbn, total_stock, available_stock, status)
+        VALUES (#{categoryId}, #{title}, #{author}, #{publisher}, #{isbn}, #{totalStock}, #{availableStock}, #{status})
+    </insert>
+
+    <update id="updateAdmin" parameterType="Book">
+        UPDATE book
+        SET category_id = #{categoryId},
+            title = #{title},
+            author = #{author},
+            publisher = #{publisher},
+            isbn = #{isbn},
+            total_stock = #{totalStock},
+            available_stock = #{availableStock}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE book
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
 </mapper>

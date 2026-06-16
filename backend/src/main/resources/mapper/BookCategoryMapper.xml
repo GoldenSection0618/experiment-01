@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.experiment2.mapper.BookCategoryMapper">
+
+    <resultMap id="BookCategoryMap" type="BookCategory">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="description" column="description" />
+        <result property="status" column="status" />
+        <result property="createdTime" column="created_time" />
+        <result property="updatedTime" column="updated_time" />
+    </resultMap>
+
+    <sql id="CategoryWhere">
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findPage" resultMap="BookCategoryMap">
+        SELECT id, name, description, status, created_time, updated_time
+        FROM book_category
+        <include refid="CategoryWhere" />
+        ORDER BY id DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*)
+        FROM book_category
+        <include refid="CategoryWhere" />
+    </select>
+
+    <select id="findActive" resultMap="BookCategoryMap">
+        SELECT id, name, description, status, created_time, updated_time
+        FROM book_category
+        WHERE status = 'ACTIVE'
+        ORDER BY id
+    </select>
+
+    <select id="findById" resultMap="BookCategoryMap">
+        SELECT id, name, description, status, created_time, updated_time
+        FROM book_category
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByName" resultMap="BookCategoryMap">
+        SELECT id, name, description, status, created_time, updated_time
+        FROM book_category
+        WHERE name = #{name}
+    </select>
+
+    <select id="findByNameExcludeId" resultMap="BookCategoryMap">
+        SELECT id, name, description, status, created_time, updated_time
+        FROM book_category
+        WHERE name = #{name}
+          AND id != #{id}
+    </select>
+
+    <insert id="insert" parameterType="BookCategory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO book_category (name, description, status)
+        VALUES (#{name}, #{description}, #{status})
+    </insert>
+
+    <update id="update" parameterType="BookCategory">
+        UPDATE book_category
+        SET name = #{name},
+            description = #{description},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE book_category
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

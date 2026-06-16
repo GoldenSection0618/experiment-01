@@ -7,7 +7,13 @@
           <el-menu-item index="/home">首页</el-menu-item>
           <el-menu-item index="/books">图书列表</el-menu-item>
           <el-menu-item v-if="userStore.role === 'USER'" index="/my-borrows">我的借阅</el-menu-item>
-          <el-menu-item v-if="userStore.role === 'ADMIN'" index="/admin">管理入口</el-menu-item>
+          <template v-if="userStore.role === 'ADMIN'">
+            <el-menu-item index="/admin">管理首页</el-menu-item>
+            <el-menu-item index="/admin/categories">分类管理</el-menu-item>
+            <el-menu-item index="/admin/books">图书管理</el-menu-item>
+            <el-menu-item index="/admin/users">用户管理</el-menu-item>
+            <el-menu-item index="/admin/borrows">借阅记录</el-menu-item>
+          </template>
           <el-menu-item index="/password">修改密码</el-menu-item>
         </template>
         <template v-else>

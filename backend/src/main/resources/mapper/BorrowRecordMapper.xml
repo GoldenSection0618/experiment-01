@@ -42,6 +42,21 @@
         <result property="fineAmount" column="fine_amount" />
     </resultMap>
 
+    <resultMap id="AdminBorrowRecordMap" type="AdminBorrowRecord">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="categoryName" column="category_name" />
+        <result property="title" column="title" />
+        <result property="author" column="author" />
+        <result property="borrowTime" column="borrow_time" />
+        <result property="dueTime" column="due_time" />
+        <result property="returnTime" column="return_time" />
+        <result property="status" column="status" />
+        <result property="renewCount" column="renew_count" />
+        <result property="overdueDays" column="overdue_days" />
+        <result property="fineAmount" column="fine_amount" />
+    </resultMap>
+
     <select id="findBookById" resultMap="com.example.experiment2.mapper.BookMapper.BookMap">
         SELECT
             b.id,
@@ -167,4 +182,80 @@
           AND br.status = 'BORROWED'
           AND br.due_time &lt; #{now}
     </update>
+
+    <update id="markAllOverdue">
+        UPDATE borrow_record br
+        INNER JOIN borrow_rule rule ON br.rule_id = rule.id
+        SET br.status = 'OVERDUE',
+            br.overdue_days = GREATEST(DATEDIFF(#{now}, br.due_time), 1),
+            br.fine_amount = GREATEST(DATEDIFF(#{now}, br.due_time), 1) * rule.fine_per_day
+        WHERE br.status = 'BORROWED'
+          AND br.due_time &lt; #{now}
+    </update>
+
+    <select id="findAdminPage" resultMap="AdminBorrowRecordMap">
+        SELECT
+            br.id,
+            u.username,
+            c.name AS category_name,
+            b.title,
+            b.author,
+            br.borrow_time,
+            br.due_time,
+            br.return_time,
+            br.status,
+            br.renew_count,
+            br.overdue_days,
+            br.fine_amount
+        FROM borrow_record br
+        INNER JOIN sys_user u ON br.user_id = u.id
+        INNER JOIN book b ON br.book_id = b.id
+        INNER JOIN book_category c ON b.category_id = c.id
+        INNER JOIN borrow_rule rule ON br.rule_id = rule.id
+        <where>
+            <if test="username != null and username != ''">
+                AND u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND br.status = #{status}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND br.borrow_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND br.borrow_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY br.borrow_time DESC, br.id DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAdmin" resultType="long">
+        SELECT COUNT(*)
+        FROM borrow_record br
+        INNER JOIN sys_user u ON br.user_id = u.id
+        INNER JOIN book b ON br.book_id = b.id
+        INNER JOIN book_category c ON b.category_id = c.id
+        INNER JOIN borrow_rule rule ON br.rule_id = rule.id
+        <where>
+            <if test="username != null and username != ''">
+                AND u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND br.status = #{status}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND br.borrow_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND br.borrow_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
 </mapper>
