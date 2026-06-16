@@ -2,7 +2,7 @@
   <el-header class="app-header">
     <div class="header-left">
       <el-button class="menu-toggle-btn" type="text" icon="el-icon-s-fold" @click="$emit('toggle-menu')" />
-      <span class="header-title">实验二 · SpringBoot Web 系统</span>
+      <span class="header-title">实验三 · SpringBoot + MyBatis Web 系统</span>
     </div>
     <div class="header-right">
       <el-badge :value="3" class="header-badge">
@@ -55,6 +55,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  flex-shrink: 0;
   padding: 0 24px;
   height: 60px !important;
   z-index: 1001;

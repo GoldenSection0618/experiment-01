@@ -3,28 +3,23 @@ package com.example.experiment2.entity;
 public class UserInfo {
 
     private Integer id;
-    private String username;
+    private String date;
     private String name;
-    private String gender;
-    private Integer age;
-    private String email;
+    private String province;
+    private String city;
     private String address;
-    private String birthday;
-    private String registerTime;
+    private String zip;
 
     public UserInfo() {
     }
 
-    public UserInfo(Integer id, String username, String name, String gender, Integer age, String email, String address, String birthday, String registerTime) {
-        this.id = id;
-        this.username = username;
+    public UserInfo(String date, String name, String province, String city, String address, String zip) {
+        this.date = date;
         this.name = name;
-        this.gender = gender;
-        this.age = age;
-        this.email = email;
+        this.province = province;
+        this.city = city;
         this.address = address;
-        this.birthday = birthday;
-        this.registerTime = registerTime;
+        this.zip = zip;
     }
 
     public Integer getId() {
@@ -35,12 +30,12 @@ public class UserInfo {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getDate() {
+        return date;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getName() {
@@ -51,28 +46,20 @@ public class UserInfo {
         this.name = name;
     }
 
-    public String getGender() {
-        return gender;
+    public String getProvince() {
+        return province;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setProvince(String province) {
+        this.province = province;
     }
 
-    public Integer getAge() {
-        return age;
+    public String getCity() {
+        return city;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getAddress() {
@@ -83,19 +70,11 @@ public class UserInfo {
         this.address = address;
     }
 
-    public String getBirthday() {
-        return birthday;
+    public String getZip() {
+        return zip;
     }
 
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getRegisterTime() {
-        return registerTime;
-    }
-
-    public void setRegisterTime(String registerTime) {
-        this.registerTime = registerTime;
+    public void setZip(String zip) {
+        this.zip = zip;
     }
 }

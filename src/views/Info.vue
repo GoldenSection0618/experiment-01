@@ -46,13 +46,11 @@ export default {
       user: null,
       fields: [
         { label: '姓名', key: 'name' },
-        { label: '用户名', key: 'username' },
-        { label: '性别', key: 'gender' },
-        { label: '年龄', key: 'age', suffix: ' 岁' },
-        { label: '邮箱', key: 'email' },
-        { label: '出生年月', key: 'birthday' },
+        { label: '日期', key: 'date' },
+        { label: '省份', key: 'province' },
+        { label: '城市', key: 'city' },
         { label: '地址', key: 'address' },
-        { label: '注册时间', key: 'registerTime' }
+        { label: '邮编', key: 'zip' }
       ]
     };
   },

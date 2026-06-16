@@ -16,7 +16,7 @@
         </div>
         <div class="profile-card">
           <strong>{{ user ? user.name : '请先登录' }}</strong>
-          <p>{{ user ? user.email : '暂无邮箱' }}</p>
+          <p>{{ user ? `${user.province || ''}${user.city || ''}` : '暂无地区' }}</p>
           <p>{{ user ? user.address : '暂无地址' }}</p>
         </div>
       </section>
@@ -35,7 +35,7 @@
             <i class="el-icon-document"></i>
             <span>页面说明</span>
           </div>
-          <p class="simple-text">这是一个使用 Vue、ElementUI 和 SpringBoot 完成的前后端分离 Web 系统。</p>
+          <p class="simple-text">这是一个使用 Vue、ElementUI、SpringBoot 和 MyBatis 完成的前后端分离 Web 系统。</p>
           <div class="home-actions">
             <el-button size="small" @click="$router.push('/users')">用户管理</el-button>
             <el-button size="small" @click="$router.push('/forgot-password')">修改密码</el-button>

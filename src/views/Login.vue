@@ -18,19 +18,11 @@
       <el-button type="text" @click="$router.push('/forgot-password')">忘记密码</el-button>
     </div>
 
-    <el-divider>第三方登录</el-divider>
-    <div class="third-party">
-      <el-button v-for="item in thirdParties" :key="item.name" plain size="small" @click="handleThird(item.name)">
-        <i :class="item.icon"></i>
-        {{ item.name }}
-      </el-button>
-    </div>
-
     <template #side>
       <div class="auth-intro">
         <i class="el-icon-s-platform"></i>
-        <h1>实验二</h1>
-        <p>SpringBoot Web 系统</p>
+        <h1>实验三</h1>
+        <p>SpringBoot + MyBatis Web 系统</p>
         <p class="demo-account">演示账号：zhangsan / 123456</p>
       </div>
     </template>
@@ -53,12 +45,7 @@ export default {
         username: usernameRules,
         password: passwordRules
       },
-      loading: false,
-      thirdParties: [
-        { name: 'QQ', icon: 'el-icon-chat-round' },
-        { name: '微信', icon: 'el-icon-chat-square' },
-        { name: '支付宝', icon: 'el-icon-s-order' }
-      ]
+      loading: false
     };
   },
   methods: {
@@ -83,9 +70,6 @@ export default {
       } finally {
         this.loading = false;
       }
-    },
-    handleThird(name) {
-      this.$message.info(`${name}登录仅作静态展示`);
     }
   }
 };
@@ -96,13 +80,6 @@ export default {
   display: flex;
   justify-content: space-between;
   margin-top: 14px;
-}
-
-.third-party {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
 .demo-account {

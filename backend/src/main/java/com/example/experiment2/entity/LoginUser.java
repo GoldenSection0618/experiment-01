@@ -7,6 +7,8 @@ public class LoginUser {
     private String password;
     private String email;
     private String birthday;
+    private Float money;
+    private String avatar;
 
     public LoginUser() {
     }
@@ -57,5 +59,21 @@ public class LoginUser {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+    }
+
+    public Float getMoney() {
+        return money;
+    }
+
+    public void setMoney(Float money) {
+        this.money = money;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

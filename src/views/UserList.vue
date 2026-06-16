@@ -14,11 +14,8 @@
           <el-form-item label="用户名">
             <el-input v-model="search.username" placeholder="请输入用户名" clearable />
           </el-form-item>
-          <el-form-item label="性别">
-            <el-select v-model="search.gender" placeholder="请选择" clearable>
-              <el-option label="男" value="男" />
-              <el-option label="女" value="女" />
-            </el-select>
+          <el-form-item label="城市">
+            <el-input v-model="search.city" placeholder="请输入城市" clearable />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
@@ -31,20 +28,15 @@
         <div class="table-container">
           <el-table :data="pagedList" stripe border :default-sort="{ prop: 'id', order: 'ascending' }">
             <el-table-column prop="id" label="编号" width="70" align="center" sortable />
-            <el-table-column prop="name" label="用户名" min-width="100" align="center" />
-            <el-table-column prop="gender" label="性别" width="70" align="center">
-              <template slot-scope="{ row }">
-                <el-tag :type="row.gender === '男' ? 'primary' : 'danger'" size="small" disable-transitions>{{ row.gender }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="age" label="年龄" width="70" align="center" sortable />
-            <el-table-column prop="email" label="邮箱" min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="date" label="日期" min-width="110" align="center" sortable />
+            <el-table-column prop="name" label="姓名" min-width="100" align="center" />
+            <el-table-column prop="province" label="省份" min-width="100" align="center" />
+            <el-table-column prop="city" label="城市" min-width="100" align="center" />
             <el-table-column prop="address" label="地址" min-width="140" align="center" show-overflow-tooltip />
-            <el-table-column label="操作" width="200" align="center" fixed="right">
+            <el-table-column prop="zip" label="邮编" min-width="100" align="center" />
+            <el-table-column label="操作" width="180" align="center" fixed="right">
               <template slot-scope="{ row }">
                 <el-button type="text" size="small" icon="el-icon-view" @click="openDetail(row)">查看</el-button>
-                <el-button type="text" size="small" icon="el-icon-edit" @click="handleEdit(row)">编辑</el-button>
-                <el-button type="text" size="small" icon="el-icon-delete" style="color:#F56C6C" @click="handleDelete(row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -76,7 +68,7 @@ export default {
   data() {
     return {
       allUsers: [],
-      search: { username: '', gender: '' },
+      search: { username: '', city: '' },
       currentPage: 1,
       pageSize: 5,
       dialogVisible: false,
@@ -93,8 +85,9 @@ export default {
         const kw = this.search.username.toLowerCase();
         list = list.filter(u => u.name.toLowerCase().includes(kw));
       }
-      if (this.search.gender) {
-        list = list.filter(u => u.gender === this.search.gender);
+      if (this.search.city) {
+        const city = this.search.city.toLowerCase();
+        list = list.filter(u => (u.city || '').toLowerCase().includes(city));
       }
       return list;
     },
@@ -127,25 +120,13 @@ export default {
       this.currentPage = 1;
     },
     handleReset() {
-      this.search = { username: '', gender: '' };
+      this.search = { username: '', city: '' };
       this.currentPage = 1;
       this.$message.info('搜索条件已重置');
     },
     openDetail(row) {
       this.currentUser = row;
       this.dialogVisible = true;
-    },
-    handleEdit(row) {
-      this.$message.info(`静态页面暂未实现编辑：${row.name}`);
-    },
-    handleDelete(row) {
-      this.$confirm(`确定删除用户"${row.name}"？`, '提示', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' })
-        .then(() => {
-          this.allUsers = this.allUsers.filter(u => u.id !== row.id);
-          this.$message.success(`已模拟删除用户：${row.name}`);
-          if (!this.pagedList.length && this.currentPage > 1) this.currentPage--;
-        })
-        .catch(() => this.$message.info('已取消删除'));
     }
   }
 };

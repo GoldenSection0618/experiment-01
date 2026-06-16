@@ -5,7 +5,7 @@
     <el-container class="app-body">
       <div v-show="menuVisible && isSmallScreen" class="menu-overlay" @click="closeMenu" />
 
-      <el-aside :class="['app-aside', { 'menu-visible': menuVisible }]" :width="isSmallScreen ? '220px' : 'auto'">
+      <el-aside :class="['app-aside', { 'menu-visible': menuVisible }]" width="220px">
         <SideMenu />
       </el-aside>
 
@@ -54,17 +54,29 @@ export default {
 </script>
 
 <style scoped>
-.app-layout { height: 100vh; overflow: hidden; }
-.app-body   { height: calc(100vh - 60px); }
+.app-layout {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
 .app-aside  {
   background-color: var(--menu-bg, #304156);
   overflow-y: auto;
   overflow-x: hidden;
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 }
 .app-main   {
   background-color: #f5f7fa;
   overflow-y: auto;
   padding: 24px;
+  flex: 1;
+  min-width: 0;
 }
 </style>
