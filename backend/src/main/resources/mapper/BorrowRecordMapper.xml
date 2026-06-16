@@ -38,8 +38,10 @@
         <result property="returnTime" column="return_time" />
         <result property="status" column="status" />
         <result property="renewCount" column="renew_count" />
+        <result property="maxRenewCount" column="max_renew_count" />
         <result property="overdueDays" column="overdue_days" />
         <result property="fineAmount" column="fine_amount" />
+        <result property="finePerDay" column="fine_per_day" />
     </resultMap>
 
     <resultMap id="AdminBorrowRecordMap" type="AdminBorrowRecord">
@@ -53,8 +55,10 @@
         <result property="returnTime" column="return_time" />
         <result property="status" column="status" />
         <result property="renewCount" column="renew_count" />
+        <result property="maxRenewCount" column="max_renew_count" />
         <result property="overdueDays" column="overdue_days" />
         <result property="fineAmount" column="fine_amount" />
+        <result property="finePerDay" column="fine_per_day" />
     </resultMap>
 
     <select id="findBookById" resultMap="com.example.experiment2.mapper.BookMapper.BookMap">
@@ -135,8 +139,10 @@
             br.return_time,
             br.status,
             br.renew_count,
+            rule.max_renew_count,
             br.overdue_days,
-            br.fine_amount
+            br.fine_amount,
+            rule.fine_per_day
         FROM borrow_record br
         INNER JOIN book b ON br.book_id = b.id
         INNER JOIN borrow_rule rule ON br.rule_id = rule.id
@@ -205,8 +211,10 @@
             br.return_time,
             br.status,
             br.renew_count,
+            rule.max_renew_count,
             br.overdue_days,
-            br.fine_amount
+            br.fine_amount,
+            rule.fine_per_day
         FROM borrow_record br
         INNER JOIN sys_user u ON br.user_id = u.id
         INNER JOIN book b ON br.book_id = b.id

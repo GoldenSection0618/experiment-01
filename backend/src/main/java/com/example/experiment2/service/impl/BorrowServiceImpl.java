@@ -92,7 +92,13 @@ public class BorrowServiceImpl implements BorrowService {
 
         BorrowRecord record = borrowRecordMapper.findByIdAndUserId(recordId, currentUserId);
         if (record == null) {
-            return Result.fail("借阅记录不存在");
+            return Result.fail("借阅记录不存在或无权操作");
+        }
+        if ("RETURNED".equals(record.getStatus())) {
+            return Result.fail("该记录已归还，不能续借");
+        }
+        if ("OVERDUE".equals(record.getStatus())) {
+            return Result.fail("逾期记录不能续借");
         }
         if (!"BORROWED".equals(record.getStatus())) {
             return Result.fail("当前状态不能续借");
@@ -129,10 +135,10 @@ public class BorrowServiceImpl implements BorrowService {
 
         BorrowRecord record = borrowRecordMapper.findByIdAndUserId(recordId, currentUserId);
         if (record == null) {
-            return Result.fail("借阅记录不存在");
+            return Result.fail("借阅记录不存在或无权操作");
         }
         if ("RETURNED".equals(record.getStatus())) {
-            return Result.fail("该图书已归还");
+            return Result.fail("该记录已归还，不能重复操作");
         }
         if (!"BORROWED".equals(record.getStatus()) && !"OVERDUE".equals(record.getStatus())) {
             return Result.fail("当前状态不能归还");

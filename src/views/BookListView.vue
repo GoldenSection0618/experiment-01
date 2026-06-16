@@ -31,7 +31,8 @@
             v-if="userStore.role === 'USER'"
             type="primary"
             size="small"
-            :disabled="row.status !== 'ON_SHELF' || row.availableStock <= 0"
+            :loading="borrowLoadingId === row.id"
+            :disabled="borrowLoadingId !== null || row.status !== 'ON_SHELF' || row.availableStock <= 0"
             @click="handleBorrow(row)"
           >
             借阅
@@ -52,6 +53,7 @@ import { useUserStore } from '../stores/user';
 const books = ref([]);
 const loading = ref(false);
 const errorMessage = ref('');
+const borrowLoadingId = ref(null);
 const userStore = useUserStore();
 
 async function loadBooks() {
@@ -74,16 +76,19 @@ async function loadBooks() {
 }
 
 async function handleBorrow(row) {
+  borrowLoadingId.value = row.id;
   try {
     const result = await borrowBook(row.id);
     if (!result.success) {
-      ElMessage.error(result.message);
+      ElMessage.error(result.message || '借阅失败');
       return;
     }
     ElMessage.success('借阅成功');
-    loadBooks();
+    await loadBooks();
   } catch (error) {
     ElMessage.error('借阅失败');
+  } finally {
+    borrowLoadingId.value = null;
   }
 }
 

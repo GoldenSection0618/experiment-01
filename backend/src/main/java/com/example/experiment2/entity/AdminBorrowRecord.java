@@ -15,8 +15,10 @@ public class AdminBorrowRecord {
     private LocalDateTime returnTime;
     private String status;
     private Integer renewCount;
+    private Integer maxRenewCount;
     private Integer overdueDays;
     private BigDecimal fineAmount;
+    private BigDecimal finePerDay;
 
     public Long getId() {
         return id;
@@ -98,6 +100,14 @@ public class AdminBorrowRecord {
         this.renewCount = renewCount;
     }
 
+    public Integer getMaxRenewCount() {
+        return maxRenewCount;
+    }
+
+    public void setMaxRenewCount(Integer maxRenewCount) {
+        this.maxRenewCount = maxRenewCount;
+    }
+
     public Integer getOverdueDays() {
         return overdueDays;
     }
@@ -112,5 +122,13 @@ public class AdminBorrowRecord {
 
     public void setFineAmount(BigDecimal fineAmount) {
         this.fineAmount = fineAmount;
+    }
+
+    public BigDecimal getFinePerDay() {
+        return finePerDay;
+    }
+
+    public void setFinePerDay(BigDecimal finePerDay) {
+        this.finePerDay = finePerDay;
     }
 }
