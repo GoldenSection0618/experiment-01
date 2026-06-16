@@ -29,8 +29,9 @@
     <template #side>
       <div class="auth-intro">
         <i class="el-icon-s-platform"></i>
-        <h1>实验一</h1>
-        <p>Vue + ElementUI 静态前端页面</p>
+        <h1>实验二</h1>
+        <p>SpringBoot Web 系统</p>
+        <p class="demo-account">演示账号：zhangsan / 123456</p>
       </div>
     </template>
   </AuthLayout>
@@ -38,6 +39,8 @@
 
 <script>
 import AuthLayout from '../components/AuthLayout.vue';
+import { login } from '../api/auth';
+import { saveUser } from '../utils/session';
 import { passwordRules, usernameRules } from '../utils/validators';
 
 export default {
@@ -59,16 +62,27 @@ export default {
     };
   },
   methods: {
-    handleLogin() {
+    async handleLogin() {
       this.$refs.formRef.validate(valid => {
-        if (!valid) return;
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.success('登录成功');
-          this.$router.push('/home');
-        }, 400);
+        if (valid) this.submitLogin();
       });
+    },
+    async submitLogin() {
+      this.loading = true;
+      try {
+        const { data: result } = await login(this.form);
+        if (!result.success) {
+          this.$message.error(result.message);
+          return;
+        }
+        saveUser(result.data);
+        this.$message.success(result.message || '登录成功');
+        this.$router.push('/home');
+      } catch (error) {
+        this.$message.error('后端服务暂不可用');
+      } finally {
+        this.loading = false;
+      }
     },
     handleThird(name) {
       this.$message.info(`${name}登录仅作静态展示`);
@@ -89,5 +103,10 @@ export default {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.demo-account {
+  margin-top: 10px;
+  font-size: 13px;
 }
 </style>

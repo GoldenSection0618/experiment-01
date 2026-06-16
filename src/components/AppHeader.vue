@@ -2,7 +2,7 @@
   <el-header class="app-header">
     <div class="header-left">
       <el-button class="menu-toggle-btn" type="text" icon="el-icon-s-fold" @click="$emit('toggle-menu')" />
-      <span class="header-title">实验一 · 静态网页设计</span>
+      <span class="header-title">实验二 · SpringBoot Web 系统</span>
     </div>
     <div class="header-right">
       <el-badge :value="3" class="header-badge">
@@ -11,7 +11,7 @@
       <el-dropdown trigger="click" @command="handleCommand">
         <span class="header-user">
           <i class="el-icon-user-solid"></i>
-          <span>{{ user.name }}</span>
+          <span>{{ user ? user.name : '未登录' }}</span>
           <i class="el-icon-arrow-down"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -25,18 +25,19 @@
 </template>
 
 <script>
-import { currentUser } from '../data/users';
+import { clearUser, getUser } from '../utils/session';
 
 export default {
   name: 'AppHeader',
   data() {
     return {
-      user: currentUser
+      user: getUser()
     };
   },
   methods: {
     handleCommand(cmd) {
       if (cmd === 'logout') {
+        clearUser();
         this.$message.success('已退出登录');
         this.$router.push('/login');
       } else if (cmd === 'info') {

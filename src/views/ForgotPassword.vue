@@ -42,6 +42,7 @@
 
 <script>
 import AuthLayout from '../components/AuthLayout.vue';
+import { changePassword } from '../api/auth';
 import { confirmPasswordRules, emailRules, passwordRules, usernameRules } from '../utils/validators';
 
 export default {
@@ -62,14 +63,24 @@ export default {
   methods: {
     handleConfirm() {
       this.$refs.formRef.validate(valid => {
-        if (!valid) return;
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.success('密码修改成功');
-          this.$router.push('/login');
-        }, 400);
+        if (valid) this.submitPassword();
       });
+    },
+    async submitPassword() {
+      this.loading = true;
+      try {
+        const { data: result } = await changePassword(this.form);
+        if (!result.success) {
+          this.$message.error(result.message);
+          return;
+        }
+        this.$message.success(result.message || '密码修改成功');
+        this.$router.push('/login');
+      } catch (error) {
+        this.$message.error('后端服务暂不可用');
+      } finally {
+        this.loading = false;
+      }
     }
   }
 };

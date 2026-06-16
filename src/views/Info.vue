@@ -14,7 +14,7 @@
           <i class="el-icon-user"></i>
           <span>个人信息</span>
         </div>
-        <div class="profile">
+        <div v-if="user" class="profile">
           <div class="avatar-circle"><i class="el-icon-user-solid"></i></div>
           <div class="profile-grid">
             <div v-for="item in fields" :key="item.key" class="kv">
@@ -23,6 +23,7 @@
             </div>
           </div>
         </div>
+        <el-empty v-else description="请先登录" />
       </el-card>
 
       <div class="actions">
@@ -35,14 +36,14 @@
 
 <script>
 import AppLayout from '../components/AppLayout.vue';
-import { currentUser } from '../data/users';
+import { getUser } from '../utils/session';
 
 export default {
   name: 'InfoPage',
   components: { AppLayout },
   data() {
     return {
-      user: currentUser,
+      user: null,
       fields: [
         { label: '姓名', key: 'name' },
         { label: '用户名', key: 'username' },
@@ -54,6 +55,13 @@ export default {
         { label: '注册时间', key: 'registerTime' }
       ]
     };
+  },
+  created() {
+    this.user = getUser();
+    if (!this.user) {
+      this.$message.warning('请先登录');
+      this.$router.replace('/login');
+    }
   }
 };
 </script>

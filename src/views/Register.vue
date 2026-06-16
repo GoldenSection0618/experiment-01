@@ -40,6 +40,7 @@
 <script>
 import AuthLayout from '../components/AuthLayout.vue';
 import AvatarUploader from '../components/AvatarUploader.vue';
+import { register } from '../api/auth';
 import { birthdayRules, emailRules, passwordRules, usernameRules } from '../utils/validators';
 
 export default {
@@ -60,14 +61,24 @@ export default {
   methods: {
     handleRegister() {
       this.$refs.formRef.validate(valid => {
-        if (!valid) return;
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.success('注册成功');
-          this.$router.push('/login');
-        }, 400);
+        if (valid) this.submitRegister();
       });
+    },
+    async submitRegister() {
+      this.loading = true;
+      try {
+        const { data: result } = await register(this.form);
+        if (!result.success) {
+          this.$message.error(result.message);
+          return;
+        }
+        this.$message.success(result.message || '注册成功');
+        this.$router.push('/login');
+      } catch (error) {
+        this.$message.error('后端服务暂不可用');
+      } finally {
+        this.loading = false;
+      }
     }
   }
 };

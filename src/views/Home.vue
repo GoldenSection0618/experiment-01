@@ -3,7 +3,7 @@
     <div class="home-content">
       <section class="welcome-bar">
         <div>
-          <h2>欢迎，{{ user.name }}</h2>
+          <h2>欢迎，{{ user ? user.name : '未登录用户' }}</h2>
           <p>{{ currentDate }}</p>
         </div>
         <el-button type="primary" plain @click="$router.push('/info')">查看个人信息</el-button>
@@ -15,9 +15,9 @@
           <span>图片展示区</span>
         </div>
         <div class="profile-card">
-          <strong>{{ user.name }}</strong>
-          <p>{{ user.email }}</p>
-          <p>{{ user.address }}</p>
+          <strong>{{ user ? user.name : '请先登录' }}</strong>
+          <p>{{ user ? user.email : '暂无邮箱' }}</p>
+          <p>{{ user ? user.address : '暂无地址' }}</p>
         </div>
       </section>
 
@@ -35,7 +35,7 @@
             <i class="el-icon-document"></i>
             <span>页面说明</span>
           </div>
-          <p class="simple-text">这是一个使用 Vue、ElementUI 和 vue-router 完成的静态前端实验页面。</p>
+          <p class="simple-text">这是一个使用 Vue、ElementUI 和 SpringBoot 完成的前后端分离 Web 系统。</p>
           <div class="home-actions">
             <el-button size="small" @click="$router.push('/users')">用户管理</el-button>
             <el-button size="small" @click="$router.push('/forgot-password')">修改密码</el-button>
@@ -48,16 +48,23 @@
 
 <script>
 import AppLayout from '../components/AppLayout.vue';
-import { currentUser } from '../data/users';
+import { getUser } from '../utils/session';
 
 export default {
   name: 'HomePage',
   components: { AppLayout },
   data() {
     return {
-      user: currentUser,
+      user: null,
       calendarValue: new Date()
     };
+  },
+  created() {
+    this.user = getUser();
+    if (!this.user) {
+      this.$message.warning('请先登录');
+      this.$router.replace('/login');
+    }
   },
   computed: {
     currentDate() {

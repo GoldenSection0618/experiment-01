@@ -68,20 +68,23 @@
 <script>
 import AppLayout from '../components/AppLayout.vue';
 import UserDetailDialog from '../components/UserDetailDialog.vue';
-import { userList } from '../data/users';
+import { getUsers } from '../api/users';
 
 export default {
   name: 'UserListPage',
   components: { AppLayout, UserDetailDialog },
   data() {
     return {
-      allUsers: userList.slice(),
+      allUsers: [],
       search: { username: '', gender: '' },
       currentPage: 1,
       pageSize: 5,
       dialogVisible: false,
       currentUser: null
     };
+  },
+  created() {
+    this.loadUsers();
   },
   computed: {
     filteredList() {
@@ -103,6 +106,18 @@ export default {
   methods: {
     handleSearch() {
       this.currentPage = 1;
+    },
+    async loadUsers() {
+      try {
+        const { data: result } = await getUsers();
+        if (!result.success) {
+          this.$message.error(result.message);
+          return;
+        }
+        this.allUsers = result.data || [];
+      } catch (error) {
+        this.$message.error('用户列表加载失败');
+      }
     },
     handlePageChange(page) {
       this.currentPage = page;
