@@ -58,7 +58,9 @@
 
 `borrow_rule`：借阅规则表，用于配置借阅天数、续借天数、最大续借次数和逾期罚金，避免把规则硬编码在 Service 中。
 
-`borrow_record`：借阅记录表，用于记录借阅、续借、归还、逾期和罚金信息。主键为 `id`，通过 `user_id` 外键关联 `sys_user(id)`，通过 `book_id` 外键关联 `book(id)`。
+`borrow_record`：借阅记录表，用于记录借阅、续借、归还、逾期和罚金信息。主键为 `id`，通过 `user_id` 外键关联 `sys_user(id)`，通过 `book_id` 外键关联 `book(id)`，通过 `rule_id` 外键关联 `borrow_rule(id)`。
+
+`borrow_record.rule_id` 用于记录每条借阅记录生成时采用的借阅规则。后续即使默认规则被调整，历史借阅记录仍能追溯当时使用的借阅天数、续借次数和罚金配置。
 
 ## 业务状态机
 

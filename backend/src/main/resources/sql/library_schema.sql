@@ -3,84 +3,87 @@ CREATE DATABASE experiment_01_library DEFAULT CHARACTER SET utf8mb4 COLLATE utf8
 USE experiment_01_library;
 
 CREATE TABLE sys_user (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    role VARCHAR(20) NOT NULL,
-    status VARCHAR(20) NOT NULL,
-    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
+    username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+    password VARCHAR(100) NOT NULL COMMENT '登录密码',
+    email VARCHAR(100) NOT NULL UNIQUE COMMENT '邮箱',
+    role VARCHAR(20) NOT NULL COMMENT '用户角色：USER普通用户，ADMIN管理员',
+    status VARCHAR(20) NOT NULL COMMENT '账号状态：NORMAL正常，DISABLED禁用',
+    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     CONSTRAINT chk_sys_user_role CHECK (role IN ('USER', 'ADMIN')),
     CONSTRAINT chk_sys_user_status CHECK (status IN ('NORMAL', 'DISABLED'))
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统用户表';
 
 CREATE TABLE book_category (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    description VARCHAR(255),
-    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '分类ID',
+    name VARCHAR(50) NOT NULL UNIQUE COMMENT '分类名称',
+    description VARCHAR(255) COMMENT '分类说明',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' COMMENT '分类状态：ACTIVE启用，DISABLED禁用',
+    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     CONSTRAINT chk_book_category_status CHECK (status IN ('ACTIVE', 'DISABLED'))
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='图书分类表';
 
 CREATE TABLE book (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    category_id BIGINT NOT NULL,
-    title VARCHAR(100) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    publisher VARCHAR(100),
-    isbn VARCHAR(30) NOT NULL UNIQUE,
-    total_stock INT NOT NULL,
-    available_stock INT NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'ON_SHELF',
-    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '图书ID',
+    category_id BIGINT NOT NULL COMMENT '分类ID',
+    title VARCHAR(100) NOT NULL COMMENT '书名',
+    author VARCHAR(100) NOT NULL COMMENT '作者',
+    publisher VARCHAR(100) COMMENT '出版社',
+    isbn VARCHAR(30) NOT NULL UNIQUE COMMENT 'ISBN编号',
+    total_stock INT NOT NULL COMMENT '总库存',
+    available_stock INT NOT NULL COMMENT '可借库存',
+    status VARCHAR(20) NOT NULL DEFAULT 'ON_SHELF' COMMENT '图书状态：ON_SHELF上架，OFF_SHELF下架',
+    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     CONSTRAINT fk_book_category FOREIGN KEY (category_id) REFERENCES book_category(id),
     CONSTRAINT chk_book_stock CHECK (total_stock >= 0 AND available_stock >= 0 AND available_stock <= total_stock),
     CONSTRAINT chk_book_status CHECK (status IN ('ON_SHELF', 'OFF_SHELF'))
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='图书信息表';
 
 CREATE INDEX idx_book_category_id ON book(category_id);
 CREATE INDEX idx_book_title ON book(title);
 CREATE INDEX idx_book_status ON book(status);
 
 CREATE TABLE borrow_rule (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    rule_name VARCHAR(50) NOT NULL,
-    borrow_days INT NOT NULL,
-    renew_days INT NOT NULL,
-    max_renew_count INT NOT NULL,
-    fine_per_day DECIMAL(10,2) NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '规则ID',
+    rule_name VARCHAR(50) NOT NULL COMMENT '规则名称',
+    borrow_days INT NOT NULL COMMENT '可借天数',
+    renew_days INT NOT NULL COMMENT '续借天数',
+    max_renew_count INT NOT NULL COMMENT '最大续借次数',
+    fine_per_day DECIMAL(10,2) NOT NULL COMMENT '每日逾期罚金',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' COMMENT '规则状态：ACTIVE启用，DISABLED禁用',
+    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     CONSTRAINT chk_borrow_rule_number CHECK (borrow_days > 0 AND renew_days > 0 AND max_renew_count >= 0 AND fine_per_day >= 0),
     CONSTRAINT chk_borrow_rule_status CHECK (status IN ('ACTIVE', 'DISABLED'))
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='借阅规则表';
 
 CREATE TABLE borrow_record (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    book_id BIGINT NOT NULL,
-    borrow_time DATETIME NOT NULL,
-    due_time DATETIME NOT NULL,
-    return_time DATETIME NULL,
-    renew_count INT NOT NULL DEFAULT 0,
-    overdue_days INT NOT NULL DEFAULT 0,
-    fine_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    status VARCHAR(20) NOT NULL,
-    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '借阅记录ID',
+    user_id BIGINT NOT NULL COMMENT '借阅用户ID',
+    book_id BIGINT NOT NULL COMMENT '图书ID',
+    rule_id BIGINT NOT NULL COMMENT '借阅规则ID',
+    borrow_time DATETIME NOT NULL COMMENT '借阅时间',
+    due_time DATETIME NOT NULL COMMENT '应还时间',
+    return_time DATETIME NULL COMMENT '实际归还时间',
+    renew_count INT NOT NULL DEFAULT 0 COMMENT '已续借次数',
+    overdue_days INT NOT NULL DEFAULT 0 COMMENT '逾期天数',
+    fine_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT '逾期罚金',
+    status VARCHAR(20) NOT NULL COMMENT '借阅状态：BORROWED借阅中，OVERDUE已逾期，RETURNED已归还',
+    created_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     CONSTRAINT fk_borrow_user FOREIGN KEY (user_id) REFERENCES sys_user(id),
     CONSTRAINT fk_borrow_book FOREIGN KEY (book_id) REFERENCES book(id),
+    CONSTRAINT fk_borrow_rule FOREIGN KEY (rule_id) REFERENCES borrow_rule(id),
     CONSTRAINT chk_borrow_record_number CHECK (renew_count >= 0 AND overdue_days >= 0 AND fine_amount >= 0),
     CONSTRAINT chk_borrow_record_status CHECK (status IN ('BORROWED', 'OVERDUE', 'RETURNED'))
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='借阅记录表';
 
 CREATE INDEX idx_borrow_user_id ON borrow_record(user_id);
 CREATE INDEX idx_borrow_book_id ON borrow_record(book_id);
+CREATE INDEX idx_borrow_rule_id ON borrow_record(rule_id);
 CREATE INDEX idx_borrow_status ON borrow_record(status);
 CREATE INDEX idx_borrow_due_time ON borrow_record(due_time);
 CREATE INDEX idx_borrow_user_book_status ON borrow_record(user_id, book_id, status);
