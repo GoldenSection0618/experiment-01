@@ -5,7 +5,6 @@ public class RegisterRequest {
     private String username;
     private String password;
     private String email;
-    private String birthday;
 
     public String getUsername() {
         return username;
@@ -31,11 +30,4 @@ public class RegisterRequest {
         this.email = email;
     }
 
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
 }

@@ -2,25 +2,16 @@ package com.example.experiment2.dto;
 
 public class PasswordRequest {
 
-    private String username;
-    private String email;
+    private String oldPassword;
     private String newPassword;
     private String confirmPassword;
 
-    public String getUsername() {
-        return username;
+    public String getOldPassword() {
+        return oldPassword;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
 
     public String getNewPassword() {

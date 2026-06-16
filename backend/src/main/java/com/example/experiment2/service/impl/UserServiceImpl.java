@@ -1,118 +1,122 @@
 package com.example.experiment2.service.impl;
 
 import com.example.experiment2.common.Result;
+import com.example.experiment2.dto.AuthResponse;
 import com.example.experiment2.dto.LoginRequest;
 import com.example.experiment2.dto.PasswordRequest;
 import com.example.experiment2.dto.RegisterRequest;
-import com.example.experiment2.entity.LoginUser;
-import com.example.experiment2.entity.UserInfo;
-import com.example.experiment2.mapper.LoginUserMapper;
-import com.example.experiment2.mapper.UserInfoMapper;
+import com.example.experiment2.entity.SysUser;
+import com.example.experiment2.mapper.SysUserMapper;
 import com.example.experiment2.service.UserService;
+import com.example.experiment2.util.JwtUtil;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final LoginUserMapper loginUserMapper;
-    private final UserInfoMapper userInfoMapper;
+    private final SysUserMapper sysUserMapper;
+    private final JwtUtil jwtUtil;
 
-    public UserServiceImpl(LoginUserMapper loginUserMapper, UserInfoMapper userInfoMapper) {
-        this.loginUserMapper = loginUserMapper;
-        this.userInfoMapper = userInfoMapper;
+    public UserServiceImpl(SysUserMapper sysUserMapper, JwtUtil jwtUtil) {
+        this.sysUserMapper = sysUserMapper;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
-    public Result<UserInfo> login(LoginRequest request) {
-        if (request == null) {
-            return Result.fail("登录信息不能为空");
-        }
-        if (isBlank(request.getUsername()) || isBlank(request.getPassword())) {
+    public Result<AuthResponse> login(LoginRequest request) {
+        if (request == null || isBlank(request.getUsername()) || isBlank(request.getPassword())) {
             return Result.fail("用户名和密码不能为空");
         }
 
-        LoginUser loginUser = loginUserMapper.findByUsername(request.getUsername());
-        if (loginUser == null) {
+        SysUser user = sysUserMapper.findByUsername(request.getUsername());
+        if (user == null) {
             return Result.fail("用户不存在");
         }
-        if (!loginUser.getPassword().equals(request.getPassword())) {
+        if (!"NORMAL".equals(user.getStatus())) {
+            return Result.fail("账号已被禁用");
+        }
+        if (!user.getPassword().equals(request.getPassword())) {
             return Result.fail("密码错误");
         }
 
-        UserInfo userInfo = userInfoMapper.findByName(request.getUsername());
-        if (userInfo == null) {
-            userInfo = new UserInfo(LocalDate.now().toString(), request.getUsername(), "未填写", "未填写", "未填写", "未填写");
-            userInfoMapper.insert(userInfo);
-        }
-        return Result.success("登录成功", userInfo);
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
+        return Result.success("登录成功", new AuthResponse(token, user, user.getRole()));
     }
 
     @Override
-    public Result<UserInfo> register(RegisterRequest request) {
-        if (request == null) {
+    public Result<Void> register(RegisterRequest request) {
+        if (request == null || isBlank(request.getUsername()) || isBlank(request.getPassword()) || isBlank(request.getEmail())) {
             return Result.fail("注册信息不能为空");
         }
-        if (isBlank(request.getUsername()) || isBlank(request.getPassword()) || isBlank(request.getEmail()) || isBlank(request.getBirthday())) {
-            return Result.fail("注册信息不能为空");
+        if (request.getUsername().trim().length() < 3 || request.getUsername().trim().length() > 20) {
+            return Result.fail("用户名长度应为 3 到 20 位");
         }
-        if (loginUserMapper.findByUsername(request.getUsername()) != null) {
+        if (request.getPassword().length() < 6) {
+            return Result.fail("密码长度不能少于 6 位");
+        }
+        if (!request.getEmail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            return Result.fail("邮箱格式不正确");
+        }
+        if (sysUserMapper.findByUsername(request.getUsername()) != null) {
             return Result.fail("用户名已存在");
         }
+        if (sysUserMapper.findByEmail(request.getEmail()) != null) {
+            return Result.fail("邮箱已存在");
+        }
 
-        LoginUser loginUser = new LoginUser();
-        loginUser.setUsername(request.getUsername());
-        loginUser.setPassword(request.getPassword());
-        loginUser.setEmail(request.getEmail());
-        loginUser.setBirthday(normalizeBirthday(request.getBirthday()));
-        loginUser.setMoney(0F);
-        loginUser.setAvatar("");
-        loginUserMapper.insert(loginUser);
-
-        UserInfo userInfo = new UserInfo(LocalDate.now().toString(), request.getUsername(), "未填写", "未填写", "未填写", "未填写");
-        userInfoMapper.insert(userInfo);
-        return Result.success("注册成功", userInfo);
+        SysUser user = new SysUser();
+        user.setUsername(request.getUsername().trim());
+        user.setPassword(request.getPassword());
+        user.setEmail(request.getEmail().trim());
+        user.setRole("USER");
+        user.setStatus("NORMAL");
+        sysUserMapper.insert(user);
+        return Result.<Void>success("注册成功", null);
     }
 
     @Override
-    public Result<Void> changePassword(PasswordRequest request) {
-        if (request == null) {
-            return Result.fail("修改密码信息不能为空");
+    public Result<Void> changePassword(PasswordRequest request, Long currentUserId) {
+        if (currentUserId == null) {
+            return Result.fail("登录状态已失效");
         }
-        if (isBlank(request.getUsername()) || isBlank(request.getEmail()) || isBlank(request.getNewPassword()) || isBlank(request.getConfirmPassword())) {
+        if (request == null || isBlank(request.getOldPassword()) || isBlank(request.getNewPassword()) || isBlank(request.getConfirmPassword())) {
             return Result.fail("修改密码信息不能为空");
         }
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             return Result.fail("两次密码不一致");
         }
+        if (request.getNewPassword().length() < 6) {
+            return Result.fail("新密码长度不能少于 6 位");
+        }
 
-        LoginUser loginUser = loginUserMapper.findByUsername(request.getUsername());
-        if (loginUser == null) {
+        SysUser user = sysUserMapper.findById(currentUserId);
+        if (user == null) {
             return Result.fail("用户不存在");
         }
-        if (!loginUser.getEmail().equals(request.getEmail())) {
-            return Result.fail("邮箱与账号不匹配");
+        if (!user.getPassword().equals(request.getOldPassword())) {
+            return Result.fail("旧密码错误");
         }
 
-        loginUserMapper.updatePassword(request.getUsername(), request.getNewPassword());
+        int rows = sysUserMapper.updatePassword(currentUserId, request.getNewPassword());
+        if (rows == 0) {
+            return Result.fail("密码修改失败");
+        }
         return Result.<Void>success("密码修改成功", null);
     }
 
     @Override
-    public Result<List<UserInfo>> listUsers() {
-        return Result.success(userInfoMapper.findAll());
+    public Result<SysUser> currentUser(Long currentUserId) {
+        if (currentUserId == null) {
+            return Result.fail("登录状态已失效");
+        }
+        SysUser user = sysUserMapper.findById(currentUserId);
+        if (user == null) {
+            return Result.fail("用户不存在");
+        }
+        return Result.success(user);
     }
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
-    }
-
-    private String normalizeBirthday(String birthday) {
-        if (birthday != null && birthday.length() == 7) {
-            return birthday + "-01 00:00:00";
-        }
-        return birthday;
     }
 }
