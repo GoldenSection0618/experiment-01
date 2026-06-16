@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.experiment2.mapper.BookMapper">
+
+    <resultMap id="BookMap" type="Book">
+        <id property="id" column="id" />
+        <result property="categoryId" column="category_id" />
+        <result property="categoryName" column="category_name" />
+        <result property="title" column="title" />
+        <result property="author" column="author" />
+        <result property="publisher" column="publisher" />
+        <result property="isbn" column="isbn" />
+        <result property="totalStock" column="total_stock" />
+        <result property="availableStock" column="available_stock" />
+        <result property="status" column="status" />
+        <result property="createdTime" column="created_time" />
+        <result property="updatedTime" column="updated_time" />
+    </resultMap>
+
+    <select id="findAll" resultMap="BookMap">
+        SELECT
+            b.id,
+            b.category_id,
+            c.name AS category_name,
+            b.title,
+            b.author,
+            b.publisher,
+            b.isbn,
+            b.total_stock,
+            b.available_stock,
+            b.status,
+            b.created_time,
+            b.updated_time
+        FROM book b
+        LEFT JOIN book_category c ON b.category_id = c.id
+        ORDER BY b.id
+    </select>
+</mapper>
