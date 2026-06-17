@@ -37,6 +37,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        // Token 只能证明曾经登录过，权限和账号状态必须以当前数据库为准。
         SysUser user = sysUserMapper.findById(claims.getUserId());
         if (user == null || !"NORMAL".equals(user.getStatus())) {
             writeUnauthorized(response);

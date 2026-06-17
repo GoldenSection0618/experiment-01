@@ -24,6 +24,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         if (!"ADMIN".equals(currentRole)) {
             return Result.fail("无管理员权限");
         }
+        // 统计前先懒刷新逾期状态，保证看板里的逾期数量不是旧状态。
         borrowRecordMapper.markAllOverdue(LocalDateTime.now());
 
         StatisticsOverview overview = new StatisticsOverview();

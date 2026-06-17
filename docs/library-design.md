@@ -14,9 +14,9 @@
 
 图书系统数据库是 `experiment_01_library`。
 
-脚本位置为 `sql/database.sql`，只允许创建和操作 `experiment_01_library`。`library` 分支不得连接或操作实验三数据库 `experiment_01`。
+脚本位置为项目根目录 `database.sql`，只允许创建和操作 `experiment_01_library`。`library` 分支不得连接或操作实验三数据库 `experiment_01`。
 
-当前 `backend/src/main/resources/application.properties` 已将默认连接库改为 `experiment_01_library`，保证在 `library` 分支直接启动时不会继续使用实验三数据。
+当前 `springboot_back/src/main/resources/application.properties` 已将默认连接库改为 `experiment_01_library`，保证在 `library` 分支直接启动时不会继续使用实验三数据。
 
 ## 继承关系
 
@@ -218,14 +218,11 @@ XML：
 
 后续建议前端结构：
 
-- `src/api`
-- `src/router`
-- `src/stores`
-- `src/views/auth`
-- `src/views/books`
-- `src/views/borrows`
-- `src/views/admin`
-- `src/components`
+- `vue_front/src/api`
+- `vue_front/src/router`
+- `vue_front/src/stores`
+- `vue_front/src/views`
+- `vue_front/src/components`
 
 ## 第 0 步不做事项
 

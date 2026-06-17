@@ -115,6 +115,7 @@ INSERT INTO borrow_record (
 (3, 4, 1, DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), NULL, 0, 10, 5.00, 'OVERDUE'),
 (3, 5, 1, DATE_SUB(NOW(), INTERVAL 38 DAY), DATE_SUB(NOW(), INTERVAL 8 DAY), DATE_SUB(NOW(), INTERVAL 2 DAY), 0, 6, 3.00, 'RETURNED');
 
+-- 初始化脚本自带库存一致性检查，避免演示数据和未归还记录脱节。
 CREATE VIEW book_stock_consistency AS
 SELECT
     b.id AS book_id,

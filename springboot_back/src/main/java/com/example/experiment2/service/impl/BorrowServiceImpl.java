@@ -56,6 +56,7 @@ public class BorrowServiceImpl implements BorrowService {
             return Result.fail("图书库存不足或已下架");
         }
 
+        // 借阅记录固定保存当时使用的规则，后续规则调整不影响历史应还时间。
         LocalDateTime now = LocalDateTime.now();
         BorrowRecord record = new BorrowRecord();
         record.setUserId(currentUserId);
@@ -103,6 +104,7 @@ public class BorrowServiceImpl implements BorrowService {
         if (!"BORROWED".equals(record.getStatus())) {
             return Result.fail("当前状态不能续借");
         }
+        // 续借前重新按服务器时间判断，避免依赖列表页的逾期刷新结果。
         if (LocalDateTime.now().isAfter(record.getDueTime())) {
             borrowRecordMapper.markMyOverdue(currentUserId, LocalDateTime.now());
             return Result.fail("借阅已逾期，不能续借");
@@ -160,6 +162,7 @@ public class BorrowServiceImpl implements BorrowService {
 
         int stockRows = borrowRecordMapper.increaseBookStock(record.getBookId());
         if (stockRows == 0) {
+            // 归还记录和库存恢复必须同时成功，否则会造成库存与未归还记录不一致。
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.fail("库存状态异常，归还失败");
         }

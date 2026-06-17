@@ -1,6 +1,8 @@
 node_modules/
 dist/
-backend/target/
+springboot_back/target/
+vue_front/node_modules/
+vue_front/dist/
 .DS_Store
 *.log
 vite.svg
