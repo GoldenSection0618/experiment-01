@@ -1,5 +1,7 @@
 package com.example.experiment2.interceptor;
 
+import com.example.experiment2.entity.SysUser;
+import com.example.experiment2.mapper.SysUserMapper;
 import com.example.experiment2.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,9 +12,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class AuthInterceptor implements HandlerInterceptor {
 
     private final JwtUtil jwtUtil;
+    private final SysUserMapper sysUserMapper;
 
-    public AuthInterceptor(JwtUtil jwtUtil) {
+    public AuthInterceptor(JwtUtil jwtUtil, SysUserMapper sysUserMapper) {
         this.jwtUtil = jwtUtil;
+        this.sysUserMapper = sysUserMapper;
     }
 
     @Override
@@ -33,9 +37,15 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        request.setAttribute("currentUserId", claims.getUserId());
-        request.setAttribute("currentUsername", claims.getUsername());
-        request.setAttribute("currentRole", claims.getRole());
+        SysUser user = sysUserMapper.findById(claims.getUserId());
+        if (user == null || !"NORMAL".equals(user.getStatus())) {
+            writeUnauthorized(response);
+            return false;
+        }
+
+        request.setAttribute("currentUserId", user.getId());
+        request.setAttribute("currentUsername", user.getUsername());
+        request.setAttribute("currentRole", user.getRole());
         return true;
     }
 

@@ -76,7 +76,8 @@ public class AdminServiceImpl implements AdminService {
         Result<Void> check = checkAdmin(role);
         if (!check.isSuccess()) return check;
         if (!"ACTIVE".equals(status) && !"DISABLED".equals(status)) return Result.fail("分类状态不正确");
-        categoryMapper.updateStatus(id, status);
+        int rows = categoryMapper.updateStatus(id, status);
+        if (rows == 0) return Result.fail("分类不存在");
         return Result.<Void>success("状态已更新", null);
     }
 
@@ -126,7 +127,8 @@ public class AdminServiceImpl implements AdminService {
         Result<Void> check = checkAdmin(role);
         if (!check.isSuccess()) return check;
         if (!"ON_SHELF".equals(status) && !"OFF_SHELF".equals(status)) return Result.fail("图书状态不正确");
-        bookMapper.updateStatus(id, status);
+        int rows = bookMapper.updateStatus(id, status);
+        if (rows == 0) return Result.fail("图书不存在");
         return Result.<Void>success("状态已更新", null);
     }
 

@@ -76,6 +76,15 @@ body {
   margin: 32px auto 0;
 }
 
+.el-message {
+  top: 76px !important;
+}
+
+.el-notification.top-right,
+.el-notification.top-left {
+  top: 76px !important;
+}
+
 @media (max-width: 720px) {
   .app-header {
     height: auto;
@@ -97,5 +106,14 @@ body {
   .page-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .el-message {
+    top: 104px !important;
+  }
+
+  .el-notification.top-right,
+  .el-notification.top-left {
+    top: 104px !important;
   }
 }

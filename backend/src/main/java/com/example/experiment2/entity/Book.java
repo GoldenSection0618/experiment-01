@@ -1,5 +1,7 @@
 package com.example.experiment2.entity;
 
+import java.time.LocalDateTime;
+
 public class Book {
 
     private Long id;
@@ -12,8 +14,8 @@ public class Book {
     private Integer totalStock;
     private Integer availableStock;
     private String status;
-    private String createdTime;
-    private String updatedTime;
+    private LocalDateTime createdTime;
+    private LocalDateTime updatedTime;
 
     public Long getId() {
         return id;
@@ -95,19 +97,19 @@ public class Book {
         this.status = status;
     }
 
-    public String getCreatedTime() {
+    public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(String createdTime) {
+    public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 
-    public String getUpdatedTime() {
+    public LocalDateTime getUpdatedTime() {
         return updatedTime;
     }
 
-    public void setUpdatedTime(String updatedTime) {
+    public void setUpdatedTime(LocalDateTime updatedTime) {
         this.updatedTime = updatedTime;
     }
 }
