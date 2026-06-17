@@ -55,6 +55,22 @@ body {
   white-space: nowrap;
 }
 
+.ai-answer {
+  margin-top: 16px;
+  padding: 12px;
+  color: #1f2937;
+  line-height: 1.7;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.ai-testing-tip {
+  margin: 14px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
 .app-main {
   padding: 24px;
 }
