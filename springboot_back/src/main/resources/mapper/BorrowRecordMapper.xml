@@ -199,6 +199,29 @@
           AND br.due_time &lt; #{now}
     </update>
 
+    <select id="sumUserFine" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(fine_amount), 0.00)
+        FROM borrow_record
+        WHERE user_id = #{userId}
+          AND fine_amount > 0
+    </select>
+
+    <select id="findUnreturnedOverdueBookTitles" resultType="string">
+        SELECT b.title
+        FROM borrow_record br
+        INNER JOIN book b ON br.book_id = b.id
+        WHERE br.user_id = #{userId}
+          AND br.status = 'OVERDUE'
+        ORDER BY br.due_time ASC, br.id ASC
+    </select>
+
+    <update id="clearUserFine">
+        UPDATE borrow_record
+        SET fine_amount = 0.00
+        WHERE user_id = #{userId}
+          AND fine_amount > 0
+    </update>
+
     <select id="findAdminPage" resultMap="AdminBorrowRecordMap">
         SELECT
             br.id,

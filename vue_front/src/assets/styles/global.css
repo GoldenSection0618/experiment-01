@@ -39,6 +39,22 @@ body {
   border-bottom: none;
 }
 
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.welcome-text {
+  max-width: 160px;
+  overflow: hidden;
+  color: #475569;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .app-main {
   padding: 24px;
 }
@@ -97,6 +113,11 @@ body {
 
   .nav-menu {
     width: 100%;
+  }
+
+  .user-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .app-main {

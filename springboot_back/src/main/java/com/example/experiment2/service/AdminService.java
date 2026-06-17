@@ -6,6 +6,7 @@ import com.example.experiment2.entity.AdminBorrowRecord;
 import com.example.experiment2.entity.Book;
 import com.example.experiment2.entity.BookCategory;
 import com.example.experiment2.entity.SysUser;
+import com.example.experiment2.entity.UserDebtInfo;
 
 public interface AdminService {
 
@@ -30,6 +31,10 @@ public interface AdminService {
     Result<PageResult<SysUser>> listUsers(String role, String username, String email, String userRole, String status, Integer pageNum, Integer pageSize);
 
     Result<Void> updateUserStatus(String role, Long id, String status);
+
+    Result<UserDebtInfo> getUserDebt(String role, Long id);
+
+    Result<Void> clearUserDebt(String role, Long id);
 
     Result<PageResult<AdminBorrowRecord>> listBorrows(String role, String username, String title, String status, String startTime, String endTime, Integer pageNum, Integer pageSize);
 }

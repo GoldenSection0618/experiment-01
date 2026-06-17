@@ -22,7 +22,10 @@
           <el-menu-item index="/register">注册</el-menu-item>
         </template>
       </el-menu>
-      <el-button v-if="userStore.isLoggedIn" type="primary" plain @click="logout">退出登录</el-button>
+      <div v-if="userStore.isLoggedIn" class="user-actions">
+        <span class="welcome-text">欢迎 {{ displayName }}</span>
+        <el-button type="primary" plain @click="logout">退出登录</el-button>
+      </div>
     </el-header>
 
     <el-main class="app-main">
@@ -41,6 +44,7 @@ const router = useRouter();
 const userStore = useUserStore();
 userStore.loadFromStorage();
 const activePath = computed(() => route.path);
+const displayName = computed(() => userStore.userInfo?.username || '用户');
 
 function logout() {
   userStore.clearLoginInfo();

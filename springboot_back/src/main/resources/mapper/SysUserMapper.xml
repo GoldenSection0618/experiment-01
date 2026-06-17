@@ -13,22 +13,23 @@
         <result property="status" column="status" />
         <result property="createdTime" column="created_time" />
         <result property="updatedTime" column="updated_time" />
+        <result property="debtAmount" column="debt_amount" />
     </resultMap>
 
     <select id="findByUsername" resultMap="SysUserMap">
-        SELECT id, username, password, email, role, status, created_time, updated_time
+        SELECT id, username, password, email, role, status, created_time, updated_time, 0.00 AS debt_amount
         FROM sys_user
         WHERE username = #{username}
     </select>
 
     <select id="findByEmail" resultMap="SysUserMap">
-        SELECT id, username, password, email, role, status, created_time, updated_time
+        SELECT id, username, password, email, role, status, created_time, updated_time, 0.00 AS debt_amount
         FROM sys_user
         WHERE email = #{email}
     </select>
 
     <select id="findById" resultMap="SysUserMap">
-        SELECT id, username, password, email, role, status, created_time, updated_time
+        SELECT id, username, password, email, role, status, created_time, updated_time, 0.00 AS debt_amount
         FROM sys_user
         WHERE id = #{id}
     </select>
@@ -45,41 +46,52 @@
     </update>
 
     <select id="findAdminPage" resultMap="SysUserMap">
-        SELECT id, username, password, email, role, status, created_time, updated_time
-        FROM sys_user
+        SELECT
+            u.id,
+            u.username,
+            u.password,
+            u.email,
+            u.role,
+            u.status,
+            u.created_time,
+            u.updated_time,
+            COALESCE(SUM(br.fine_amount), 0.00) AS debt_amount
+        FROM sys_user u
+        LEFT JOIN borrow_record br ON br.user_id = u.id AND br.fine_amount > 0
         <where>
             <if test="username != null and username != ''">
-                AND username LIKE CONCAT('%', #{username}, '%')
+                AND u.username LIKE CONCAT('%', #{username}, '%')
             </if>
             <if test="email != null and email != ''">
-                AND email LIKE CONCAT('%', #{email}, '%')
+                AND u.email LIKE CONCAT('%', #{email}, '%')
             </if>
             <if test="role != null and role != ''">
-                AND role = #{role}
+                AND u.role = #{role}
             </if>
             <if test="status != null and status != ''">
-                AND status = #{status}
+                AND u.status = #{status}
             </if>
         </where>
-        ORDER BY id DESC
+        GROUP BY u.id, u.username, u.password, u.email, u.role, u.status, u.created_time, u.updated_time
+        ORDER BY u.id DESC
         LIMIT #{offset}, #{pageSize}
     </select>
 
     <select id="countAdmin" resultType="long">
         SELECT COUNT(*)
-        FROM sys_user
+        FROM sys_user u
         <where>
             <if test="username != null and username != ''">
-                AND username LIKE CONCAT('%', #{username}, '%')
+                AND u.username LIKE CONCAT('%', #{username}, '%')
             </if>
             <if test="email != null and email != ''">
-                AND email LIKE CONCAT('%', #{email}, '%')
+                AND u.email LIKE CONCAT('%', #{email}, '%')
             </if>
             <if test="role != null and role != ''">
-                AND role = #{role}
+                AND u.role = #{role}
             </if>
             <if test="status != null and status != ''">
-                AND status = #{status}
+                AND u.status = #{status}
             </if>
         </where>
     </select>

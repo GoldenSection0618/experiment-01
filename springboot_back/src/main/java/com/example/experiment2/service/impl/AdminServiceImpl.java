@@ -6,6 +6,7 @@ import com.example.experiment2.entity.AdminBorrowRecord;
 import com.example.experiment2.entity.Book;
 import com.example.experiment2.entity.BookCategory;
 import com.example.experiment2.entity.SysUser;
+import com.example.experiment2.entity.UserDebtInfo;
 import com.example.experiment2.mapper.BookCategoryMapper;
 import com.example.experiment2.mapper.BookMapper;
 import com.example.experiment2.mapper.BorrowRecordMapper;
@@ -157,6 +158,33 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public Result<UserDebtInfo> getUserDebt(String role, Long id) {
+        Result<Void> check = checkAdmin(role);
+        if (!check.isSuccess()) return Result.fail(check.getMessage());
+        if (id == null) return Result.fail("用户不存在");
+        SysUser user = sysUserMapper.findById(id);
+        if (user == null) return Result.fail("用户不存在");
+        borrowRecordMapper.markAllOverdue(LocalDateTime.now());
+        return Result.success(buildUserDebtInfo(id));
+    }
+
+    @Override
+    public Result<Void> clearUserDebt(String role, Long id) {
+        Result<Void> check = checkAdmin(role);
+        if (!check.isSuccess()) return check;
+        if (id == null) return Result.fail("用户不存在");
+        SysUser user = sysUserMapper.findById(id);
+        if (user == null) return Result.fail("用户不存在");
+        borrowRecordMapper.markAllOverdue(LocalDateTime.now());
+        List<String> unreturnedBooks = borrowRecordMapper.findUnreturnedOverdueBookTitles(id);
+        if (!unreturnedBooks.isEmpty()) {
+            return Result.fail("用户仍有逾期图书未归还：" + String.join("、", unreturnedBooks));
+        }
+        borrowRecordMapper.clearUserFine(id);
+        return Result.<Void>success("欠费已清除", null);
+    }
+
+    @Override
     public Result<PageResult<AdminBorrowRecord>> listBorrows(String role, String username, String title, String status, String startTime, String endTime, Integer pageNum, Integer pageSize) {
         Result<Void> check = checkAdmin(role);
         if (!check.isSuccess()) return Result.fail(check.getMessage());
@@ -190,6 +218,16 @@ public class AdminServiceImpl implements AdminService {
             return Result.fail("无管理员权限");
         }
         return Result.<Void>success(null);
+    }
+
+    private UserDebtInfo buildUserDebtInfo(Long userId) {
+        UserDebtInfo info = new UserDebtInfo();
+        List<String> unreturnedBooks = borrowRecordMapper.findUnreturnedOverdueBookTitles(userId);
+        info.setUserId(userId);
+        info.setDebtAmount(borrowRecordMapper.sumUserFine(userId));
+        info.setHasUnreturnedOverdue(!unreturnedBooks.isEmpty());
+        info.setUnreturnedBooks(unreturnedBooks);
+        return info;
     }
 
     private int offset(Integer pageNum, Integer pageSize) {

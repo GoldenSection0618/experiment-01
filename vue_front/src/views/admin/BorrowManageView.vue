@@ -27,7 +27,7 @@
       </el-table-column>
       <el-table-column prop="overdueDays" label="逾期天数" width="95" />
       <el-table-column label="罚金" width="115">
-        <template #default="{ row }">{{ money(row.fineAmount) }} / {{ money(row.finePerDay) }}每天</template>
+        <template #default="{ row }">{{ money(row.fineAmount) }}</template>
       </el-table-column>
     </el-table>
     <el-pagination layout="total, prev, pager, next" :total="total" :page-size="query.pageSize" v-model:current-page="query.pageNum" @current-change="load" />

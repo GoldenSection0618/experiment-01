@@ -45,6 +45,12 @@ public interface BorrowRecordMapper {
 
     int markAllOverdue(@Param("now") LocalDateTime now);
 
+    java.math.BigDecimal sumUserFine(Long userId);
+
+    List<String> findUnreturnedOverdueBookTitles(Long userId);
+
+    int clearUserFine(Long userId);
+
     List<AdminBorrowRecord> findAdminPage(@Param("username") String username,
                                           @Param("title") String title,
                                           @Param("status") String status,

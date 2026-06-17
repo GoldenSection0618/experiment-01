@@ -3,10 +3,12 @@ package com.example.experiment2.controller;
 import com.example.experiment2.common.PageResult;
 import com.example.experiment2.common.Result;
 import com.example.experiment2.entity.SysUser;
+import com.example.experiment2.entity.UserDebtInfo;
 import com.example.experiment2.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +38,16 @@ public class AdminUserController {
     @PutMapping("/{id}/status")
     public Result<Void> updateStatus(@PathVariable Long id, @RequestParam String status, HttpServletRequest request) {
         return adminService.updateUserStatus(role(request), id, status);
+    }
+
+    @GetMapping("/{id}/debt")
+    public Result<UserDebtInfo> debt(@PathVariable Long id, HttpServletRequest request) {
+        return adminService.getUserDebt(role(request), id);
+    }
+
+    @PostMapping("/{id}/debt/clear")
+    public Result<Void> clearDebt(@PathVariable Long id, HttpServletRequest request) {
+        return adminService.clearUserDebt(role(request), id);
     }
 
     private String role(HttpServletRequest request) {

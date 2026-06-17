@@ -1,6 +1,7 @@
 package com.example.experiment2.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.math.BigDecimal;
 
 public class SysUser {
 
@@ -12,6 +13,7 @@ public class SysUser {
     private String status;
     private String createdTime;
     private String updatedTime;
+    private BigDecimal debtAmount;
 
     public Long getId() {
         return id;
@@ -76,5 +78,13 @@ public class SysUser {
 
     public void setUpdatedTime(String updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public BigDecimal getDebtAmount() {
+        return debtAmount;
+    }
+
+    public void setDebtAmount(BigDecimal debtAmount) {
+        this.debtAmount = debtAmount;
     }
 }

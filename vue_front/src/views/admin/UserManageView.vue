@@ -13,6 +13,14 @@
       <el-table-column prop="email" label="邮箱" />
       <el-table-column prop="role" label="角色" width="100" />
       <el-table-column prop="status" label="状态" width="100" />
+      <el-table-column label="欠费金额" width="120">
+        <template #default="{ row }">
+          <el-button v-if="hasDebt(row)" link type="danger" @click="handleDebt(row)">
+            {{ money(row.debtAmount) }}
+          </el-button>
+          <span v-else>{{ money(row.debtAmount) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="createdTime" label="创建时间" min-width="160" />
       <el-table-column label="操作" width="110">
         <template #default="{ row }">
@@ -28,8 +36,8 @@
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
-import { ElMessage } from 'element-plus';
-import { listAdminUsers, updateUserStatus } from '../../api/adminUsers';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { clearUserDebt, getUserDebt, listAdminUsers, updateUserStatus } from '../../api/adminUsers';
 
 const query = reactive({ username: '', email: '', role: '', status: '', pageNum: 1, pageSize: 10 });
 const rows = ref([]);
@@ -47,5 +55,47 @@ async function toggle(row) {
   if (!result.success) return ElMessage.error(result.message);
   load();
 }
+
+async function handleDebt(row) {
+  const result = await getUserDebt(row.id);
+  if (!result.success) {
+    ElMessage.error(result.message || '欠费信息查询失败');
+    return;
+  }
+  const debt = result.data;
+  if (debt.hasUnreturnedOverdue) {
+    await ElMessageBox.alert(`该用户还有逾期图书未归还：${debt.unreturnedBooks.join('、')}`, '不能清除欠费', {
+      confirmButtonText: '知道了',
+      type: 'warning'
+    });
+    await load();
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(`确认帮助用户 ${row.username} 清除 ${money(debt.debtAmount)} 元欠费？`, '清除欠费', {
+      confirmButtonText: '确认清除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    });
+  } catch (error) {
+    return;
+  }
+  const clearResult = await clearUserDebt(row.id);
+  if (!clearResult.success) {
+    ElMessage.error(clearResult.message || '欠费清除失败');
+    return;
+  }
+  ElMessage.success(clearResult.message || '欠费已清除');
+  await load();
+}
+
+function hasDebt(row) {
+  return Number(row.debtAmount || 0) > 0;
+}
+
+function money(value) {
+  return Number(value || 0).toFixed(2);
+}
+
 onMounted(load);
 </script>
