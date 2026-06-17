@@ -38,7 +38,45 @@
         SELECT <include refid="BookColumns" />
         FROM book b
         LEFT JOIN book_category c ON b.category_id = c.id
+        WHERE b.status = 'ON_SHELF'
         ORDER BY b.id
+    </select>
+
+    <select id="findUserPage" resultMap="BookMap">
+        SELECT <include refid="BookColumns" />
+        FROM book b
+        LEFT JOIN book_category c ON b.category_id = c.id
+        <where>
+            AND b.status = 'ON_SHELF'
+            <if test="title != null and title != ''">
+                AND b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="author != null and author != ''">
+                AND b.author LIKE CONCAT('%', #{author}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND b.category_id = #{categoryId}
+            </if>
+        </where>
+        ORDER BY b.id DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countUser" resultType="long">
+        SELECT COUNT(*)
+        FROM book b
+        <where>
+            AND b.status = 'ON_SHELF'
+            <if test="title != null and title != ''">
+                AND b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="author != null and author != ''">
+                AND b.author LIKE CONCAT('%', #{author}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND b.category_id = #{categoryId}
+            </if>
+        </where>
     </select>
 
     <select id="findAdminPage" resultMap="BookMap">

@@ -3,12 +3,30 @@
     <div class="page-header">
       <div>
         <h1>图书列表</h1>
-        <p>数据来自后端 /api/books 接口和 MyBatis XML 查询。</p>
+        <p>支持按书名、作者和分类在线查询上架图书。</p>
       </div>
       <el-button type="primary" :loading="loading" @click="loadBooks">刷新</el-button>
     </div>
 
     <el-alert v-if="errorMessage" :title="errorMessage" type="error" show-icon :closable="false" />
+
+    <el-form :inline="true" :model="query" class="query-form">
+      <el-form-item label="书名">
+        <el-input v-model="query.title" clearable placeholder="输入书名" />
+      </el-form-item>
+      <el-form-item label="作者">
+        <el-input v-model="query.author" clearable placeholder="输入作者" />
+      </el-form-item>
+      <el-form-item label="分类">
+        <el-select v-model="query.categoryId" clearable placeholder="全部分类" style="width: 150px">
+          <el-option v-for="category in categories" :key="category.id" :label="category.name" :value="category.id" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" :loading="loading" @click="handleSearch">查询</el-button>
+        <el-button @click="resetSearch">重置</el-button>
+      </el-form-item>
+    </el-form>
 
     <el-table v-loading="loading" :data="books" border stripe class="book-table">
       <el-table-column prop="title" label="书名" min-width="160" />
@@ -40,39 +58,80 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <el-pagination
+      class="table-pagination"
+      layout="total, prev, pager, next"
+      :total="total"
+      :page-size="query.pageSize"
+      v-model:current-page="query.pageNum"
+      @current-change="loadBooks"
+    />
   </section>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import { listBooks } from '../api/books';
+import { listBookCategories, listBooks } from '../api/books';
 import { borrowBook } from '../api/borrows';
 import { useUserStore } from '../stores/user';
 
 const books = ref([]);
+const categories = ref([]);
+const total = ref(0);
 const loading = ref(false);
 const errorMessage = ref('');
 const borrowLoadingId = ref(null);
 const userStore = useUserStore();
+const query = reactive({
+  title: '',
+  author: '',
+  categoryId: null,
+  pageNum: 1,
+  pageSize: 10
+});
 
 async function loadBooks() {
   loading.value = true;
   errorMessage.value = '';
   try {
-    const result = await listBooks();
+    const result = await listBooks(query);
     if (!result.success) {
       errorMessage.value = result.message || '图书列表加载失败';
       books.value = [];
+      total.value = 0;
       return;
     }
-    books.value = result.data || [];
+    books.value = result.data?.list || [];
+    total.value = result.data?.total || 0;
   } catch (error) {
     errorMessage.value = '无法连接后端服务';
     books.value = [];
+    total.value = 0;
   } finally {
     loading.value = false;
   }
+}
+
+async function loadCategories() {
+  const result = await listBookCategories();
+  if (result.success) {
+    categories.value = result.data || [];
+  }
+}
+
+function handleSearch() {
+  query.pageNum = 1;
+  loadBooks();
+}
+
+function resetSearch() {
+  query.title = '';
+  query.author = '';
+  query.categoryId = null;
+  query.pageNum = 1;
+  loadBooks();
 }
 
 async function handleBorrow(row) {
@@ -92,5 +151,8 @@ async function handleBorrow(row) {
   }
 }
 
-onMounted(loadBooks);
+onMounted(() => {
+  loadCategories();
+  loadBooks();
+});
 </script>

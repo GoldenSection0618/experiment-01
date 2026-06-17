@@ -14,7 +14,7 @@
 
 图书系统数据库是 `experiment_01_library`。
 
-脚本位置为 `backend/src/main/resources/sql/library_schema.sql`，只允许创建和操作 `experiment_01_library`。`library` 分支不得连接或操作实验三数据库 `experiment_01`。
+脚本位置为 `sql/database.sql`，只允许创建和操作 `experiment_01_library`。`library` 分支不得连接或操作实验三数据库 `experiment_01`。
 
 当前 `backend/src/main/resources/application.properties` 已将默认连接库改为 `experiment_01_library`，保证在 `library` 分支直接启动时不会继续使用实验三数据。
 

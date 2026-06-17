@@ -8,6 +8,16 @@ public interface BookMapper {
 
     List<Book> findAll();
 
+    List<Book> findUserPage(@Param("title") String title,
+                            @Param("author") String author,
+                            @Param("categoryId") Long categoryId,
+                            @Param("offset") int offset,
+                            @Param("pageSize") int pageSize);
+
+    long countUser(@Param("title") String title,
+                   @Param("author") String author,
+                   @Param("categoryId") Long categoryId);
+
     List<Book> findAdminPage(@Param("title") String title,
                              @Param("author") String author,
                              @Param("categoryId") Long categoryId,

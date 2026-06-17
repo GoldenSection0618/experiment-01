@@ -13,6 +13,7 @@
             <el-menu-item index="/admin/books">图书管理</el-menu-item>
             <el-menu-item index="/admin/users">用户管理</el-menu-item>
             <el-menu-item index="/admin/borrows">借阅记录</el-menu-item>
+            <el-menu-item index="/admin/statistics">统计分析</el-menu-item>
           </template>
           <el-menu-item index="/password">修改密码</el-menu-item>
         </template>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.experiment2.mapper.StatisticsMapper">
+
+    <resultMap id="StatisticsSummaryMap" type="StatisticsSummary">
+        <result property="totalBooks" column="total_books" />
+        <result property="borrowedCount" column="borrowed_count" />
+        <result property="overdueCount" column="overdue_count" />
+        <result property="userCount" column="user_count" />
+    </resultMap>
+
+    <resultMap id="BookBorrowRankMap" type="BookBorrowRank">
+        <id property="bookId" column="book_id" />
+        <result property="title" column="title" />
+        <result property="author" column="author" />
+        <result property="categoryName" column="category_name" />
+        <result property="borrowCount" column="borrow_count" />
+    </resultMap>
+
+    <resultMap id="CategoryBorrowStatMap" type="CategoryBorrowStat">
+        <id property="categoryId" column="category_id" />
+        <result property="categoryName" column="category_name" />
+        <result property="borrowCount" column="borrow_count" />
+    </resultMap>
+
+    <resultMap id="UserBorrowStatMap" type="UserBorrowStat">
+        <id property="userId" column="user_id" />
+        <result property="username" column="username" />
+        <result property="borrowCount" column="borrow_count" />
+        <result property="overdueCount" column="overdue_count" />
+    </resultMap>
+
+    <resultMap id="DailyBorrowTrendMap" type="DailyBorrowTrend">
+        <result property="borrowDate" column="borrow_date" />
+        <result property="borrowCount" column="borrow_count" />
+    </resultMap>
+
+    <select id="findSummary" resultMap="StatisticsSummaryMap">
+        SELECT
+            (SELECT COUNT(*) FROM book) AS total_books,
+            (SELECT COUNT(*) FROM borrow_record WHERE status IN ('BORROWED', 'OVERDUE')) AS borrowed_count,
+            (SELECT COUNT(*) FROM borrow_record WHERE status = 'OVERDUE') AS overdue_count,
+            (SELECT COUNT(*) FROM sys_user WHERE role = 'USER') AS user_count
+    </select>
+
+    <select id="findHotBooks" resultMap="BookBorrowRankMap">
+        SELECT
+            b.id AS book_id,
+            b.title,
+            b.author,
+            c.name AS category_name,
+            COUNT(br.id) AS borrow_count
+        FROM borrow_record br
+        INNER JOIN book b ON br.book_id = b.id
+        INNER JOIN book_category c ON b.category_id = c.id
+        GROUP BY b.id, b.title, b.author, c.name
+        ORDER BY borrow_count DESC, b.id
+        LIMIT 5
+    </select>
+
+    <select id="findCategoryStats" resultMap="CategoryBorrowStatMap">
+        SELECT
+            c.id AS category_id,
+            c.name AS category_name,
+            COUNT(br.id) AS borrow_count
+        FROM book_category c
+        LEFT JOIN book b ON b.category_id = c.id
+        LEFT JOIN borrow_record br ON br.book_id = b.id
+        GROUP BY c.id, c.name
+        ORDER BY borrow_count DESC, c.id
+    </select>
+
+    <select id="findUserStats" resultMap="UserBorrowStatMap">
+        SELECT
+            u.id AS user_id,
+            u.username,
+            COUNT(br.id) AS borrow_count,
+            SUM(CASE WHEN br.status = 'OVERDUE' THEN 1 ELSE 0 END) AS overdue_count
+        FROM sys_user u
+        LEFT JOIN borrow_record br ON br.user_id = u.id
+        WHERE u.role = 'USER'
+        GROUP BY u.id, u.username
+        ORDER BY borrow_count DESC, u.id
+        LIMIT 10
+    </select>
+
+    <select id="findRecentTrends" resultMap="DailyBorrowTrendMap">
+        SELECT
+            DATE(br.borrow_time) AS borrow_date,
+            COUNT(*) AS borrow_count
+        FROM borrow_record br
+        WHERE br.borrow_time &gt;= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(br.borrow_time)
+        ORDER BY borrow_date
+    </select>
+</mapper>
